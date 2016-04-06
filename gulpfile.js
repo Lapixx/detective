@@ -69,7 +69,6 @@ gulp.task('styles', function() {
     .pipe(rename({suffix: '.min'}))
     .pipe(minifycss())
     .pipe(gulp.dest('public/css'))
-    .pipe(notify({ message: 'Styles task complete' }))
     .pipe(reload({stream:true}));
 });
 
@@ -82,8 +81,11 @@ gulp.task('scripts', function() {
     .pipe(sourcemaps.init())
     .pipe(uglify())
     .pipe(sourcemaps.write())
-    .pipe(gulp.dest('public/js'))
-    .pipe(notify({ message: 'Scripts task complete' }));
+    .pipe(gulp.dest('public/js'));
+});
+
+gulp.task('build', ['styles', 'scripts'], function() {
+    notify({ message: 'Build task complete' });
 });
 
 gulp.task('clean', function() {
@@ -91,11 +93,9 @@ gulp.task('clean', function() {
     .pipe(clean());
 });
 
-gulp.task('watch', function() {
+gulp.task('watch', ['browser-sync'], function() {
   gulp.watch('src/styles/*.less', ['styles']);
   gulp.watch('src/scripts/*.js', ['scripts']);
 });
 
-gulp.task('default', ['clean', 'browser-sync'], function() {
-    gulp.start('styles', 'scripts', 'watch');
-});
+gulp.task('default', ['clean', 'build', 'watch']);
